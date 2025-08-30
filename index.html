@@ -208,6 +208,11 @@
     footer{text-align:center;opacity:.9;font-size:12px;margin-top:28px}
     .footer-cta{margin-bottom:14px}
     .footer-cta .btn + .btn{ margin-top:12px; }
+
+    /* Komentarze (sekcja na dole) */
+    .comments{
+      margin-top:clamp(18px,3.5vw,28px);
+    }
   </style>
 </head>
 <body>
@@ -246,6 +251,17 @@
       </p>
     </section>
 
+    <!-- Komentarze (Utterances) -->
+    <section id="comments" class="comments" aria-label="Komentarze">
+      <script src="https://utteranc.es/client.js"
+              repo="haviyawi-web/HAVI"
+              issue-term="pathname"
+              theme="github-light"
+              crossorigin="anonymous"
+              async>
+      </script>
+    </section>
+
     <footer>
       <div class="footer-cta">
         <a class="btn btn--youtube" href="https://youtube.com/@haviyavi?si=p2-P6C0ilV30zO9s" target="_blank" rel="noopener noreferrer" aria-label="Przejdź do kanału Havi na YouTube">
@@ -265,21 +281,31 @@
     // Rok w stopce
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Motyw: localStorage + preferencje systemowe
+    // Motyw: localStorage + preferencje systemowe + synchronizacja z Utterances
     (function(){
       const STORAGE_KEY = 'theme';
       const root = document.documentElement;
       const btn = document.getElementById('themeToggle');
       const metaTheme = document.querySelector('meta[name="theme-color"]');
 
+      function setUtterancesThemeByMode(mode){
+        const iframe = document.querySelector('iframe.utterances-frame');
+        if(!iframe) return;
+        const theme = mode === 'light' ? 'github-light' : 'github-dark';
+        iframe.contentWindow?.postMessage({ type: 'set-theme', theme }, 'https://utteranc.es');
+      }
+
       function applyTheme(theme){
         root.setAttribute('data-theme', theme);
         localStorage.setItem(STORAGE_KEY, theme);
+        // aktualizacja meta theme-color
         if(metaTheme){
           const computed = getComputedStyle(root).getPropertyValue('--theme-color').trim();
           metaTheme.setAttribute('content', computed || (theme === 'light' ? '#ffffff' : '#6a00ff'));
         }
         btn.setAttribute('aria-label', theme === 'light' ? 'Przełącz na ciemny motyw' : 'Przełącz na jasny motyw');
+        // ustaw motyw w komentarzach
+        setTimeout(() => setUtterancesThemeByMode(theme), 50);
       }
 
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -295,6 +321,7 @@
         applyTheme(current);
       });
 
+      // Reaguj na zmianę systemowej preferencji, jeśli user nie ustawił ręcznie
       const mql = window.matchMedia('(prefers-color-scheme: dark)');
       mql.addEventListener?.('change', (e) => {
         const hasSaved = localStorage.getItem(STORAGE_KEY);
@@ -302,6 +329,20 @@
           applyTheme(e.matches ? 'dark' : 'light');
         }
       });
+
+      // Gdy pojawi się iframe utterances — ustaw motyw zgodny z aktualnym
+      window.addEventListener('load', () => {
+        const mode = root.getAttribute('data-theme') || 'dark';
+        setUtterancesThemeByMode(mode);
+      });
+      const commentsEl = document.getElementById('comments');
+      if(commentsEl){
+        const obs = new MutationObserver(() => {
+          const mode = root.getAttribute('data-theme') || 'dark';
+          setUtterancesThemeByMode(mode);
+        });
+        obs.observe(commentsEl, { childList:true, subtree:true });
+      }
     })();
   </script>
 </body>
