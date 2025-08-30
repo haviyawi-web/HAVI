@@ -26,7 +26,7 @@
       --btn-glow:rgba(122,0,245,0.35);
       --btn-text:#ffffff;
 
-      --theme-color:#6a00ff; /* do paska adresu na mobile */
+      --theme-color:#6a00ff;
     }
 
     /* JASNY MOTYW */
@@ -49,6 +49,12 @@
 
     *{box-sizing:border-box}
     html,body{height:100%}
+
+    /* Zapobiega auto-powiększaniu czcionek na mobile (iOS) */
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+    }
 
     body{
       margin:0;
@@ -178,7 +184,7 @@
               mask:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" viewBox="0 0 24 24"><path d="M23.5 6.2a3.05 3.05 0 0 0-2.1-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.4.6a3.05 3.05 0 0 0-2.1 2.1C0 8 0 12 0 12s0 4 .5 5.8a3.05 3.05 0 0 0 2.1 2.1c1.8.6 9.4.6 9.4.6s7.6 0 9.4-.6a3.05 3.05 0 0 0 2.1-2.1C24 16 24 12 24 12s0-4-.5-5.8zM9.7 15.5v-7l6.3 3.5-6.3 3.5z"/></svg>') no-repeat center/contain;
     }
 
-    /* YouTube: czerwony przycisk */
+    /* YouTube: czerwony */
     .btn--youtube{
       background:linear-gradient(180deg, #ff2d2d 0%, #c31111 100%);
       border-color:rgba(0,0,0,0.18);
@@ -189,7 +195,7 @@
       box-shadow:0 14px 26px rgba(0,0,0,0.45), 0 0 36px rgba(195,17,17,0.55) inset;
     }
 
-    /* Spotify: zielony przycisk + ikona */
+    /* Spotify: zielony */
     .btn--spotify{
       background:#1DB954;
       border-color:rgba(0,0,0,0.15);
@@ -209,24 +215,40 @@
     .footer-cta{margin-bottom:14px}
     .footer-cta .btn + .btn{ margin-top:12px; }
 
-    /* Panel na komentarze w stopce */
+    /* Panel komentarzy — jednolity wygląd wszędzie */
     .comments-panel{
-      margin-top:clamp(16px,3vw,24px);
+      margin-top:20px;            /* stały odstęp */
       background:var(--card);
       border:1px solid var(--border);
       border-radius:16px;
-      padding:clamp(12px,2.5vw,18px);
+      padding:16px;               /* stałe paddingi */
       box-shadow:0 10px 24px rgba(0,0,0,0.25);
     }
     .comments-title{
-      margin:0 0 clamp(10px,3.5vw,14px);
+      margin:0 0 12px;
       font-weight:800;
       text-align:center;
       color:var(--text);
-      line-height:1.3;
+      line-height:1.35;
       letter-spacing:.2px;
-      font-size:clamp(16px,4.5vw,22px);
-      overflow-wrap:anywhere; /* żeby ładnie łamało na telefonach */
+      font-size:20px;             /* stały rozmiar, bez clamp */
+      overflow-wrap:anywhere;
+    }
+    /* Iframe Utterances — stałe obramowanie/zaokrąglenie */
+    #comments{
+      margin:0;
+    }
+    iframe.utterances-frame{
+      display:block;
+      width:100% !important;
+      min-height:300px;           /* aby nie „skakało” przy wczytywaniu */
+      border:0;
+      border-radius:12px;
+      background:transparent;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; }
     }
   </style>
 </head>
@@ -300,7 +322,7 @@
     // Rok w stopce
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Motyw: localStorage + preferencje systemowe + synchronizacja z Utterances
+    // Motyw + synchronizacja z Utterances
     (function(){
       const STORAGE_KEY = 'theme';
       const root = document.documentElement;
@@ -322,7 +344,7 @@
           metaTheme.setAttribute('content', computed || (theme === 'light' ? '#ffffff' : '#6a00ff'));
         }
         btn.setAttribute('aria-label', theme === 'light' ? 'Przełącz na ciemny motyw' : 'Przełącz na jasny motyw');
-        setTimeout(() => setUtterancesThemeByMode(theme), 50);
+        setTimeout(() => setUtterancesThemeByMode(theme), 80);
       }
 
       const saved = localStorage.getItem(STORAGE_KEY);
