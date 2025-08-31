@@ -68,6 +68,7 @@
       position:relative;
     }
 
+    /* Przełącznik motywu */
     .theme-toggle{
       position:absolute; top:clamp(10px,2.5vw,16px); right:clamp(10px,2.5vw,16px);
       display:inline-flex; align-items:center; justify-content:center; gap:6px;
@@ -95,6 +96,7 @@
       display:block; width:clamp(260px,85vw,820px); max-width:100%; height:auto; margin:0 auto; transition:filter .2s ease;
     }
 
+    /* Film: responsywny, z obramowaniem i zaokrągleniem */
     .video-plain{
       position:relative; width:100%; aspect-ratio:16/9; margin:0 0 clamp(18px,3.5vw,28px);
       border-radius:14px; overflow:hidden; border:1px solid var(--video-border);
@@ -181,13 +183,16 @@
       />
     </header>
 
-    <!-- Film -->
+    <!-- Film (podmieniony na Twój embed) -->
     <section class="video-plain" role="region" aria-label="Odtwarzacz YouTube">
       <iframe
-        src="https://www.youtube.com/embed/nlwg-lk0sL0?rel=0&modestbranding=1"
-        title="Havi — wideo na YouTube"
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/nlwg-lk0sL0?si=jbhnnRyCAS4BP4gD"
+        title="YouTube video player"
+        frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
         allowfullscreen>
       </iframe>
     </section>
